@@ -1,0 +1,83 @@
+name: Build and Release NetSpeed
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up MSYS2 UCRT64 Toolchain
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-binutils
+
+    - name: Compile NetSpeed and Test Suite
+      shell: msys2 {0}
+      run: |
+        make clean
+        make all
+
+    - name: Execute Automated Unit Tests
+      shell: msys2 {0}
+      run: |
+        ./bin/NetSpeedTests.exe
+
+    - name: Package Portable ZIP and Release Artifacts
+      run: |
+        $Version = if ($env:GITHUB_REF -like "refs/tags/v*") { $env:GITHUB_REF.Substring(10) } else { "1.0.0" }
+        $PackageDir = "NetSpeed-$Version-Windows-x64"
+        New-Item -ItemType Directory -Path $PackageDir | Out-Null
+
+        Copy-Item -Path "bin\NetSpeed.exe" -Destination "$PackageDir\NetSpeed.exe"
+        Copy-Item -Path "scripts\install.ps1" -Destination "$PackageDir\install.ps1"
+        Copy-Item -Path "scripts\uninstall.ps1" -Destination "$PackageDir\uninstall.ps1"
+        Copy-Item -Path "README.md" -Destination "$PackageDir\README.md"
+        Copy-Item -Path "LICENSE" -Destination "$PackageDir\LICENSE"
+
+        $ZipFile = "$PackageDir.zip"
+        Compress-Archive -Path "$PackageDir\*" -DestinationPath $ZipFile -Force
+
+        # Generate Checksums
+        Get-FileHash -Algorithm SHA256 "bin\NetSpeed.exe", $ZipFile | Format-List | Out-File "checksums.txt"
+
+        Write-Host "Packaged $ZipFile and generated checksums."
+
+    - name: Upload Build Artifacts (CI)
+      uses: actions/upload-artifact@v4
+      with:
+        name: NetSpeed-Windows-x64
+        path: |
+          bin/NetSpeed.exe
+          NetSpeed-*.zip
+          checksums.txt
+
+    - name: Publish GitHub Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          bin/NetSpeed.exe
+          NetSpeed-*.zip
+          checksums.txt
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,24 @@
+# Binaries and intermediate build outputs
+bin/
+build/
+*.exe
+*.o
+*.obj
+*.res
+*.zip
+checksums.txt
+
+# Editor and IDE configurations
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Local test scratch
+test_*.cpp
+test_*.exe
+
+# Windows / OS metadata
+Thumbs.db
+Desktop.ini
+
