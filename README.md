@@ -1,7 +1,6 @@
 # NetSpeed — Real-Time Windows Internet Speed Monitor
 
-[![Build and Release](https://github.com/your-username/NetSpeed/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/your-username/NetSpeed/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 [![Platform: Windows 10 / 11 (x64)](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(x64)-brightgreen.svg)](#supported-windows-versions)
 
 **NetSpeed** is a lightweight, high-performance Windows desktop application built in native modern C++ and Win32 APIs. It monitors and displays your live download (↓) and upload (↑) internet throughput directly on the Windows taskbar, with minimal memory and CPU footprint.
@@ -173,8 +172,4 @@ NetSpeed/
 ```
 
 ---
-
-## License
-
-NetSpeed is open-source software licensed under the [MIT License](LICENSE).
-
+# netSpeed
