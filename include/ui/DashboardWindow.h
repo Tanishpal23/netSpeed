@@ -30,6 +30,8 @@ private:
     void DrawStatCard(HDC hdc, const RECT& cardRect, const std::wstring& title,
                       const std::wstring& line1, COLORREF color1,
                       const std::wstring& line2, COLORREF color2);
+    void CreateFonts();
+    void RepositionControls();
 
     SettingsManager& m_settingsMgr;
     SpeedCalculator& m_calculator;
@@ -45,8 +47,9 @@ private:
     HFONT m_hNormalFont = NULL;
     HFONT m_hBoldFont = NULL;
     HFONT m_hValueFont = NULL;
+    HFONT m_hSubValueFont = NULL;
 
-    int m_width = 680;
-    int m_height = 540;
+    int m_width = 720;
+    int m_height = 600;
     UINT m_currentDpi = 96;
 };

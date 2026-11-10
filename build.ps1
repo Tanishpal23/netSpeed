@@ -19,9 +19,25 @@ if ($Clean) {
     return
 }
 
+# Stop running instance if any to allow recompilation
+$runningProc = Get-Process -Name "NetSpeed" -ErrorAction SilentlyContinue
+if ($runningProc) {
+    Write-Host "Attempting to stop running NetSpeed process before compiling..." -ForegroundColor Yellow
+    $runningProc | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 300
+}
+
 # Ensure directories exist
 New-Item -ItemType Directory -Force -Path $BuildDir | Out-Null
 New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
+
+# If NetSpeed.exe is locked by a running process, rotate it to allow fresh build
+$mainExe = Join-Path $BinDir "NetSpeed.exe"
+if (Test-Path $mainExe) {
+    $oldExe = Join-Path $BinDir "NetSpeed_old.exe"
+    Remove-Item $oldExe -Force -ErrorAction SilentlyContinue
+    Rename-Item $mainExe "NetSpeed_old.exe" -Force -ErrorAction SilentlyContinue
+}
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "   Building NetSpeed ($Configuration)   " -ForegroundColor Cyan

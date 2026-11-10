@@ -85,11 +85,11 @@ void TaskbarWidget::UpdateDimensions() {
     float scale = static_cast<float>(m_currentDpi) / 96.0f;
 
     if (s.displayLayout == DisplayLayout::SingleLine) {
-        m_width = static_cast<int>(145.0f * scale);
+        m_width = static_cast<int>(168.0f * scale);
         m_height = static_cast<int>(32.0f * scale);
     } else {
-        m_width = static_cast<int>(100.0f * scale);
-        m_height = static_cast<int>(36.0f * scale);
+        m_width = static_cast<int>(115.0f * scale);
+        m_height = static_cast<int>(38.0f * scale);
     }
 
     if (m_hFont) {

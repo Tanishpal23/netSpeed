@@ -2,10 +2,13 @@ name: Build and Release NetSpeed
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
     tags: [ "v*" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -19,27 +22,22 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up MSYS2 UCRT64 Toolchain
+    - name: Set up MSYS2 Toolchain
       uses: msys2/setup-msys2@v2
       with:
         msystem: UCRT64
-        update: true
+        update: false
+        path-type: inherit
         install: >-
           mingw-w64-ucrt-x86_64-gcc
           mingw-w64-ucrt-x86_64-binutils
+          make
 
-    - name: Compile NetSpeed and Test Suite
-      shell: msys2 {0}
+    - name: Compile and Run Unit Tests
       run: |
-        make clean
-        make all
+        .\build.ps1 -RunTests
 
-    - name: Execute Automated Unit Tests
-      shell: msys2 {0}
-      run: |
-        ./bin/NetSpeedTests.exe
-
-    - name: Package Portable ZIP and Release Artifacts
+    - name: Package Portable ZIP
       run: |
         $Version = if ($env:GITHUB_REF -like "refs/tags/v*") { $env:GITHUB_REF.Substring(10) } else { "1.0.0" }
         $PackageDir = "NetSpeed-$Version-Windows-x64"
@@ -56,8 +54,6 @@ jobs:
 
         # Generate Checksums
         Get-FileHash -Algorithm SHA256 "bin\NetSpeed.exe", $ZipFile | Format-List | Out-File "checksums.txt"
-
-        Write-Host "Packaged $ZipFile and generated checksums."
 
     - name: Upload Build Artifacts (CI)
       uses: actions/upload-artifact@v4
