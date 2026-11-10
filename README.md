@@ -106,7 +106,7 @@ NetSpeed registers in your per-user Windows Run registry (`HKCU\Software\Microso
 ### Build using PowerShell
 ```powershell
 # Clone the repository
-git clone https://github.com/your-username/NetSpeed.git
+git clone https://github.com/tanishpal23/NetSpeed.git
 cd NetSpeed
 
 # Build Release binaries and run automated test suite
@@ -170,6 +170,3 @@ NetSpeed/
 ├── build.ps1                      # Local Windows build script
 └── Makefile                       # Standard GNU makefile
 ```
-
----
-# netSpeed
